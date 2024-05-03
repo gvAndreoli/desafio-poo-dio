@@ -1,63 +1,96 @@
-import br.com.dio.desafio.dominio.Bootcamp;
-import br.com.dio.desafio.dominio.Curso;
-import br.com.dio.desafio.dominio.Dev;
-import br.com.dio.desafio.dominio.Mentoria;
+import br.com.dio.desafio.dominio.*;
 
+import java.sql.SQLOutput;
 import java.time.LocalDate;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        Curso curso1 = new Curso();
-        curso1.setTitulo("curso java");
-        curso1.setDescricao("descrição curso java");
-        curso1.setCargaHoraria(8);
+        Scanner sc = new Scanner(System.in);
+        List<Bootcamp> bootcamps = new ArrayList<>();
 
-        Curso curso2 = new Curso();
-        curso2.setTitulo("curso js");
-        curso2.setDescricao("descrição curso js");
-        curso2.setCargaHoraria(4);
+        while (true) {
+            System.out.print("cadastrar um bootcamp? (s/n): ");
+            String resposta = sc.nextLine();
 
-        Mentoria mentoria = new Mentoria();
-        mentoria.setTitulo("mentoria de java");
-        mentoria.setDescricao("descrição mentoria java");
-        mentoria.setData(LocalDate.now());
+            if (resposta.equals("s") || resposta.equals("S")) {
+                Set<Conteudo> conteudos = new HashSet<>();
+                Set<Dev> devs = new HashSet<>();
+                Bootcamp bc;
+                System.out.println("Cadastrando um bootcamp, insira as informações");
+                System.out.print("Nome: ");
+                String nome = sc.nextLine();
+                System.out.print("Descrição: ");
+                String descricao = sc.nextLine();
+                bc = new Bootcamp(nome, descricao);
 
-        /*System.out.println(curso1);
-        System.out.println(curso2);
-        System.out.println(mentoria);*/
+                System.out.println();
+                System.out.print("Hora de adicionar conteudo ao bootcamp, deseja adcionar quantos itens? ");
+                int numeroDeItens = sc.nextInt();
+                for (int i = 0; i < numeroDeItens; i++) {
+                    System.out.println();
+                    System.out.println("Mentoria ou Curso? (M/C)");
+                    sc.nextLine();
+                    String resp = sc.nextLine();
+                    System.out.println("_____________________________________________________________________");
+                    if (resp.equals("m") || resp.equals("M")) {
+                        Conteudo conteudo;
+                        System.out.print("Nome: ");
+                        String titulo = sc.nextLine();
+                        System.out.print("Descrição: ");
+                        String desc = sc.nextLine();
+                        System.out.print("Data(yyyy-MM-dd): ");
+                        String data = sc.nextLine();
+                        conteudo = new Mentoria(titulo, desc, LocalDate.parse(data));
 
-        Bootcamp bootcamp = new Bootcamp();
-        bootcamp.setNome("Bootcamp Java Developer");
-        bootcamp.setDescricao("Descrição Bootcamp Java Developer");
-        bootcamp.getConteudos().add(curso1);
-        bootcamp.getConteudos().add(curso2);
-        bootcamp.getConteudos().add(mentoria);
+                        conteudos.add(conteudo);
+                    } else if (resp.equals("c") || resp.equals("C")) {
+                        Conteudo conteudo;
+                        System.out.print("Nome: ");
+                        String titulo = sc.nextLine();
+                        System.out.print("Descrição: ");
+                        String desc = sc.nextLine();
+                        System.out.print("cargaHoraria: ");
+                        int cargaHoraria = sc.nextInt();
+                        conteudo = new Curso(titulo, desc, cargaHoraria);
 
-        Dev devCamila = new Dev();
-        devCamila.setNome("Camila");
-        devCamila.inscreverBootcamp(bootcamp);
-        System.out.println("Conteúdos Inscritos Camila:" + devCamila.getConteudosInscritos());
-        devCamila.progredir();
-        devCamila.progredir();
-        System.out.println("-");
-        System.out.println("Conteúdos Inscritos Camila:" + devCamila.getConteudosInscritos());
-        System.out.println("Conteúdos Concluídos Camila:" + devCamila.getConteudosConcluidos());
-        System.out.println("XP:" + devCamila.calcularTotalXp());
+                        conteudos.add(conteudo);
+                    } else {
+                        System.out.println("Opção inválida");
+                        i--;
+                    }
+                }
+                bc.setConteudos(conteudos);
 
-        System.out.println("-------");
+                System.out.println();
+                System.out.print("Hora de adicionar os devs ao bootcamp, quantos serão? ");
+                int numeroDeDevs = sc.nextInt();
+                System.out.println();
+                System.out.println("_________________________________________________________");
+                for (int i = 0; i < numeroDeDevs; i++) {
+                    System.out.print("Nome: ");
+                    sc.nextLine();
+                    nome = sc.nextLine();
+                    Dev dev = new Dev(nome);
+                    dev.inscreverBootcamp(bc);
 
-        Dev devJoao = new Dev();
-        devJoao.setNome("Joao");
-        devJoao.inscreverBootcamp(bootcamp);
-        System.out.println("Conteúdos Inscritos João:" + devJoao.getConteudosInscritos());
-        devJoao.progredir();
-        devJoao.progredir();
-        devJoao.progredir();
-        System.out.println("-");
-        System.out.println("Conteúdos Inscritos João:" + devJoao.getConteudosInscritos());
-        System.out.println("Conteúdos Concluidos João:" + devJoao.getConteudosConcluidos());
-        System.out.println("XP:" + devJoao.calcularTotalXp());
+                    devs.add(dev);
+                }
+                bc.setDevsInscritos(devs);
+                
+                bootcamps.add(bc);
+            } else {
+                break;
 
+            }
+        }
+
+        if (!bootcamps.isEmpty()){
+            bootcamps.forEach(System.out::println);
+        } else {
+            System.out.println("Não há nenhum bootcamp cadastrado");
+        }
+
+        sc.close();
     }
-
 }
